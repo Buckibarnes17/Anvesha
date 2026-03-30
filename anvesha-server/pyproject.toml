@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "anvesha-server"
+version = "0.1.0"
+description = "Minimal OTLP tracing backend for the Anvesha observability UI."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "aiosqlite>=0.20.0",
+  "fastapi>=0.115.0",
+  "openinference-semantic-conventions>=0.1.12",
+  "opentelemetry-proto>=1.29.0",
+  "protobuf>=5.27.0",
+  "pydantic>=2.8.0",
+  "sqlalchemy[asyncio]>=2.0.36",
+  "uvicorn[standard]>=0.30.6",
+]
+
+[project.scripts]
+anvesha-server = "anvesha_server.main:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/anvesha_server"]
