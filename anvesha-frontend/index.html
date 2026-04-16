@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Anvesha</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark"></div>
+          <div class="brand-copy">
+            <span class="brand-name">ANVESHA</span>
+            <span class="brand-subtitle">TECHNICAL TRACEABILITY</span>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <button id="nav-projects" class="nav-item active" type="button">
+            <span class="nav-icon">▥</span>
+            <span>Projects</span>
+            <span id="nav-project-count" class="nav-pill">0</span>
+          </button>
+          <button class="nav-item secondary-nav" type="button" disabled>
+            <span class="nav-icon">⛶</span>
+            <span>Trace Explorer</span>
+          </button>
+        </nav>
+
+        <button class="sidebar-primary-button" type="button">+ New Trace</button>
+
+        <div class="sidebar-footer">
+          <p class="sidebar-link">Documentation</p>
+          <p class="sidebar-link">Support</p>
+          <p class="sidebar-label">Backend API</p>
+          <form id="endpoint-form" class="endpoint-form">
+            <input
+              id="endpoint-input"
+              class="endpoint-input"
+              type="url"
+              placeholder="http://127.0.0.1:8000/v1"
+              autocomplete="off"
+            />
+            <button class="endpoint-button" type="submit">Connect</button>
+          </form>
+          <div class="endpoint-toolbar">
+            <button id="refresh-button" class="ghost-button" type="button">Refresh</button>
+            <span id="connection-badge" class="connection-badge">Idle</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-panel">
+        <header class="topbar">
+          <div id="breadcrumb" class="breadcrumb">Projects</div>
+          <div class="topbar-search-wrap">
+            <input
+              id="global-search"
+              class="search-input topbar-search"
+              type="search"
+              placeholder="Search projects or trace IDs..."
+              autocomplete="off"
+            />
+          </div>
+          <div class="topbar-actions">
+            <button class="icon-button" type="button">🔔</button>
+            <button class="icon-button" type="button">?</button>
+            <span class="topbar-badge">Anvesha</span>
+          </div>
+        </header>
+
+        <section id="projects-view" class="view">
+          <div class="toolbar-panel">
+            <div class="toolbar-title">
+              <h1>Project Gallery</h1>
+              <p>Overview of active telemetry projects and trace synchronization status.</p>
+            </div>
+            <div class="toolbar-controls">
+              <button class="ghost-button strong-button" type="button">Filter</button>
+              <button class="ghost-button strong-button" type="button">Recent</button>
+            </div>
+          </div>
+
+          <div class="summary-row">
+            <article class="summary-card">
+              <p>Total Projects</p>
+              <h2 id="total-projects">0</h2>
+            </article>
+            <article class="summary-card">
+              <p>Total Traces</p>
+              <h2 id="total-traces">0</h2>
+            </article>
+            <article class="summary-card">
+              <p>Total Spans</p>
+              <h2 id="total-spans">0</h2>
+            </article>
+            <article class="summary-card">
+              <p>Latest Activity</p>
+              <h2 id="latest-activity">No data</h2>
+            </article>
+          </div>
+
+          <div id="projects-grid" class="projects-grid"></div>
+        </section>
+
+        <section id="project-view" class="view hidden">
+          <div class="project-header">
+            <div>
+              <p class="eyebrow">Trace Explorer</p>
+              <h1 id="project-title">Select a project</h1>
+            </div>
+            <div class="header-actions">
+              <button id="back-to-projects" class="ghost-button" type="button">Back to Projects</button>
+              <button class="primary-action-button" type="button">Sync Data</button>
+            </div>
+          </div>
+
+          <div class="summary-row">
+            <article class="summary-card">
+              <p>Total Traces</p>
+              <h2 id="project-total-traces">0</h2>
+            </article>
+            <article class="summary-card">
+              <p>Total Spans</p>
+              <h2 id="project-total-spans">0</h2>
+            </article>
+            <article class="summary-card">
+              <p>Error Traces</p>
+              <h2 id="project-error-traces">0</h2>
+            </article>
+            <article class="summary-card">
+              <p>Latest Activity</p>
+              <h2 id="project-last-activity">No data</h2>
+            </article>
+          </div>
+
+          <div class="panel-card">
+            <div class="table-toolbar">
+              <div class="table-toolbar-main">
+                <input
+                  id="trace-search"
+                  class="search-input"
+                  type="search"
+                  placeholder="Search traces by ID or name..."
+                  autocomplete="off"
+                />
+                <div class="table-toolbar-actions">
+                  <button class="ghost-button strong-button" type="button">Live View</button>
+                  <button class="ghost-button strong-button" type="button">History</button>
+                  <button class="ghost-button strong-button" type="button">Filters</button>
+                </div>
+              </div>
+            </div>
+            <div class="trace-table-wrap">
+              <table class="trace-table">
+                <thead>
+                  <tr>
+                    <th>Status</th>
+                    <th>Trace ID</th>
+                    <th>Session</th>
+                    <th>Start Time</th>
+                    <th>Span Count</th>
+                    <th>Latency</th>
+                  </tr>
+                </thead>
+                <tbody id="trace-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="trace-view" class="view hidden trace-detail-view">
+            <div class="trace-header">
+              <div class="trace-header-main">
+                <button id="back-to-project" class="ghost-button" type="button">Back</button>
+                <div>
+                  <p class="eyebrow">Trace Details</p>
+                  <h1 id="trace-title">No trace selected</h1>
+                </div>
+              </div>
+              <div class="trace-modal-actions">
+                <button class="ghost-button" type="button">Export</button>
+                <button class="primary-action-button" type="button">Sync Data</button>
+              </div>
+            </div>
+
+            <div class="trace-status-row">
+              <div class="trace-stat-pill">
+                <span>Status</span>
+                <strong id="trace-status">--</strong>
+              </div>
+              <div class="trace-stat-pill">
+                <span>Latency</span>
+                <strong id="trace-latency">--</strong>
+              </div>
+              <div class="trace-stat-pill">
+                <span>Spans</span>
+                <strong id="trace-span-count">0</strong>
+              </div>
+            </div>
+
+            <div id="trace-meta" class="trace-meta-row"></div>
+
+            <div class="trace-detail-layout">
+              <section class="trace-tree-panel panel-card">
+                <div class="panel-heading">
+                  <h2>Trace Structure</h2>
+                  <input
+                    id="span-search"
+                    class="search-input compact"
+                    type="search"
+                    placeholder="Filter spans"
+                    autocomplete="off"
+                  />
+                </div>
+                <div id="span-tree" class="span-tree"></div>
+              </section>
+
+              <section class="trace-info-panel panel-card">
+                <div class="panel-heading">
+                  <h2 id="selected-span-title">Span Info</h2>
+                  <span id="selected-span-kind" class="kind-pill">--</span>
+                </div>
+
+                <div class="span-summary-grid">
+                  <article class="summary-mini">
+                    <p>Status</p>
+                    <h3 id="selected-span-status">--</h3>
+                  </article>
+                  <article class="summary-mini">
+                    <p>Latency</p>
+                    <h3 id="selected-span-latency">--</h3>
+                  </article>
+                  <article class="summary-mini">
+                    <p>Start</p>
+                    <h3 id="selected-span-start">--</h3>
+                  </article>
+                  <article class="summary-mini">
+                    <p>Parent</p>
+                    <h3 id="selected-span-parent">--</h3>
+                  </article>
+                </div>
+
+                <div class="detail-tabs">
+                  <button class="detail-tab active" data-tab="attributes" type="button">Attributes</button>
+                  <button class="detail-tab" data-tab="events" type="button">Events</button>
+                  <button class="detail-tab" data-tab="raw" type="button">Raw Span</button>
+                </div>
+
+                <div id="tab-attributes" class="detail-tab-panel active">
+                  <div class="panel-section-title">All Attributes</div>
+                  <div id="selected-span-attributes" class="structured-view"></div>
+                </div>
+
+                <div id="tab-events" class="detail-tab-panel">
+                  <div class="panel-section-title">Events</div>
+                  <div id="selected-span-events" class="events-view"></div>
+                </div>
+
+                <div id="tab-raw" class="detail-tab-panel">
+                  <div class="panel-section-title">Raw Span JSON</div>
+                  <pre id="selected-span-raw" class="json-viewer"></pre>
+                </div>
+              </section>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <template id="project-card-template">
+        <button class="project-card" type="button">
+          <div class="project-card-banner"></div>
+          <div class="project-card-top">
+            <div>
+              <h3 class="project-card-name"></h3>
+              <p class="project-card-subtitle"></p>
+            </div>
+            <span class="project-status-pill"></span>
+          </div>
+          <div class="project-card-metrics">
+            <div>
+              <span>Total Traces</span>
+              <strong class="project-card-traces"></strong>
+            </div>
+            <div>
+              <span>Total Spans</span>
+              <strong class="project-card-spans"></strong>
+            </div>
+          </div>
+        </button>
+      </template>
+
+      <template id="trace-row-template">
+        <tr class="trace-row">
+          <td class="trace-status-cell"></td>
+          <td class="trace-id-cell"></td>
+          <td class="trace-session-cell"></td>
+          <td class="trace-start-cell"></td>
+          <td class="trace-count-cell"></td>
+          <td class="trace-latency-cell"></td>
+        </tr>
+      </template>
+
+      <template id="span-node-template">
+        <button class="span-node" type="button">
+          <div class="span-node-left">
+            <span class="span-indent"></span>
+            <span class="span-toggle"></span>
+            <span class="status-dot"></span>
+            <span class="span-name"></span>
+          </div>
+          <div class="span-node-right">
+            <span class="span-events"></span>
+            <span class="span-latency"></span>
+            <span class="span-status"></span>
+          </div>
+        </button>
+      </template>
+
+      <script type="module" src="./app.js"></script>
+    </div>
+  </body>
+</html>

@@ -80,10 +80,13 @@ class Trace(Base, TimestampMixin):
 
 class Span(Base, TimestampMixin):
     __tablename__ = "spans"
+    __table_args__ = (
+        UniqueConstraint("trace_rowid", "span_id", name="uq_spans_trace_span_id"),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     trace_rowid: Mapped[int] = mapped_column(ForeignKey("traces.id", ondelete="CASCADE"), index=True)
-    span_id: Mapped[str] = mapped_column(String(16), unique=True, index=True)
+    span_id: Mapped[str] = mapped_column(String(16), index=True)
     parent_id: Mapped[str | None] = mapped_column(String(16), nullable=True, index=True)
     span_kind: Mapped[str] = mapped_column(String(64), index=True)
     name: Mapped[str] = mapped_column(String(512), index=True)

@@ -1,0 +1,38 @@
+# OS/editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Python caches and virtualenvs
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Node/frontend build artifacts
+node_modules/
+dist/
+build/
+
+# Local databases and logs
+*.db
+*.log
+*.err.log
+
+# Project-specific runtime artifacts
+anvesha-server/.venv/
+anvesha-server/anvesha.db
+anvesha-server/anvesha-test.db
+anvesha-server/*.log
+anvesha-server/*.err.log
+
+# Frontend local env files
+anvesha-frontend/.env
+anvesha-frontend/.env.*
+

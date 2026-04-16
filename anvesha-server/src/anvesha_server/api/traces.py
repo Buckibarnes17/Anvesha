@@ -38,10 +38,13 @@ async def post_traces(
         raise HTTPException(status_code=415, detail=f"Unsupported content encoding: {content_encoding}")
 
     body = await request.body()
-    if content_encoding == "gzip":
-        body = gzip.decompress(body)
-    elif content_encoding == "deflate":
-        body = zlib.decompress(body)
+    try:
+        if content_encoding == "gzip":
+            body = gzip.decompress(body)
+        elif content_encoding == "deflate":
+            body = zlib.decompress(body)
+    except (OSError, zlib.error) as exc:
+        raise HTTPException(status_code=422, detail="Request body is not valid compressed OTLP data") from exc
 
     export_request = ExportTraceServiceRequest()
     try:
@@ -53,8 +56,11 @@ async def post_traces(
         project_name = get_project_name(resource_spans.resource.attributes, settings.default_project_name)
         for scope_spans in resource_spans.scope_spans:
             for otlp_span in scope_spans.spans:
-                span = decode_otlp_span(otlp_span)
-                await insert_span(session, span, project_name)
+                try:
+                    span = decode_otlp_span(otlp_span)
+                    await insert_span(session, span, project_name)
+                except ValueError as exc:
+                    raise HTTPException(status_code=422, detail=str(exc)) from exc
 
     await session.commit()
     response_message = ExportTraceServiceResponse()
